@@ -1,0 +1,188 @@
+#!/bin/bash
+
+declare homedir
+declare WDPath
+
+getlocations () {
+	homedir="$(dirname $0)"
+	modules="${homedir}/troubledscript_modules/"
+	WDPath=$(pwd);
+
+	echo script home dir is $homedir
+	echo script modules are at $modules
+	echo is all well\?..
+
+	if [[ $homedir == "" || modules == "" ]]; 
+		then exit 99; 
+		else return 0;
+	fi;
+}
+
+getlocations;
+
+source "${modules}chatbox.sh"
+
+devilnames user constantine
+devilnames script larry
+
+# SHOWING THE CURRENT WORKING DIR AND LISTING ITS FILES
+
+WDConfirmed="default"				### just verbosing
+
+chatstart
+devilmakes script say "ok hi" 1
+
+# ==== CHECKING WHETHER LAUNCHED AT THE RIGHT SPOT
+## === ==== LISTING CURRENT DIR FIRST AND ASKING USER TO CONFIRM
+
+devilmakes script say "we're currently in ${WDPath} and here's what I see here: " 1
+ls -FmhG
+printf "\n"
+devilmakes script say "looks right? we ok to proceed? just answer yes or no" 1
+devilmakes user confess WDConfirmed 0
+devilmakes script say "ok gotcha. $WDConfirmed it is" 1
+
+## === ==== PROCESSING USER INPUT
+
+if [ ${WDConfirmed} == "_no_" ]; 
+	then 							### exiting script if user says 'no'
+	devilmakes script say "but if so then um" 2
+	devilmakes script say "any thoughts on where's the right folder?" 1
+	devilmakes script say "wait stop. no clue what to do next anyway." 2
+	devilmakes script say "I quit. launch me at the right place next time" 1
+		chatpsa script left 1
+	devilsays "um bye $scriptName" 2
+	devilsays "to be frank I wouldn't quite call this conversation really productive lol" 3
+		chatpsa devil left 1
+		chatpsa user alone 1
+			chatclose 1
+
+elif [ ${WDConfirmed} == "_yes_" ]; 
+	then 							### proceeding if user says 'yes'
+	devilmakes script say "let's get it done" 1
+
+else 								### exiting script if user says something other than 'yes' or 'no'
+	devilmakes script say "wait what" 4
+	devilmakes script say "the fuck's that supposed to mean?" 1
+	devilmakes script say "that's bullshit. this whole thing is bullshit. fuck you. I quit" 1
+	devilmakes script say "you go meditate on your fucking behavior" 1
+		chatpsa script left 2
+	devilsays "I personally lol'd" 2
+		chatpsa devil left 2
+		chatpsa user alone 1
+			chatclose 2
+fi
+
+## === ==== SCANNING AND DOUBLE-CHECKING THE CONFIRMED DIR
+
+IFS='
+'
+
+#files=(`ls *.md > /dev/null 2>&1`) 	### fetching names of markdown files to process
+files=(`ls *.md`) 	### fetching names of markdown files to process
+len=${#files[*]}  					### getting the number of those files
+if [ $len -eq 0 ]; then				### exiting if there are none
+	devilmakes script say "...you serious? you seen any md files in this fucking folder? go waste somebody else's time" 2
+		chatpsa script left 1
+		chatpsa devil joined 1
+	devilsays "ah c'mon" 2
+		chatpsa devil left 1
+		chatpsa user alone 1
+			chatclose 2
+fi
+
+devilmakes script say "ok, fetched $len md files to process" 2
+
+# ==== PREPARING ENVIRONMENT
+
+## === ==== NAMING PROJECT
+
+devilmakes script say "what's your project called?" 1
+devilmakes user confess projectNameRaw 0		### reading user reply to use as filename later
+# read projectNameRaw					
+projectName=${projectNameRaw//[^a-zA-Z0-9-]/}	### normalizing input
+if [ "_${projectName}_" != "${projectNameRaw}" ]; then 		### mention if the resulting string differs from the original
+	devilmakes script say "I think I apologize but I actually had to clean your shit up and that was totally non-inspiring so fuck you." 2
+	devilmakes script say "here's the name I'll use as a title for your project from now on" 1
+	devilmakes script say "and I congratulate you on the fact that you can't actually do shit about it. " 1
+	devilmakes script say "except embrace it of course" 3
+	devilsays "heheh sorry" 1
+fi
+
+devilmakes script say $projectName 2
+devilmakes script say "yeah that's the word, I'll be using it in filenames" 1
+devilmakes script say "so please keep up and remember what to look for" 1
+
+tStr=$(date +%d%m%Y-%H%M) 						### getting date in string format like 01011970-1451 
+devilmakes script say "I will also use a timestamp which is currently set to $tStr" 1
+
+
+## === ==== CREATING A BACKUP DIR TO MOVE PROCESSED FILES TO
+
+### "${WDPath}"/
+sigStr="by${scriptName}"
+srcBackupDir="srcmd-processed${sigStr}-${tStr}"
+processedPtsDir="modmd-headshifted${sigStr}-${tStr}"
+mkdir -p "${srcBackupDir}"
+mkdir -p "${processedPtsDir}" 
+
+devilmakes script say "heads up, I created a backup folder right here" 2
+devilmakes script say "I'll be moving all source md files there one by one after processing" 1
+
+# ==== PROCESSING MARKDOWN FILES
+
+## === ==== SHIFTING HEADINGS
+
+devilmakes script say "I'll be writing numbers here for each file I process, just so that you could keep track." 1
+
+### == ==== ==== two-digit string version of the counter for export filenames
+
+i=0
+ii=""
+while [ $i -lt $len ]; do
+	
+	fname="${files[$i]}"
+	if [ $i -lt 10 ]; 		### this is disgusting please rewrite it. mb try using seq -w or printf %d02
+		then ii="0$i"
+		else ii="$i"
+	fi
+
+### == ==== ==== modded article names
+
+	ename="${projectName}-headshifted${sigStr}-${tStr}-pt${ii}.md" 	### setting filenames for export
+
+	sed '1!s/^#* ./#&/g;1!s/^# .//g' $fname > $ename 						### shifting all headings except 1st in each file
+	mv $fname $srcBackupDir													### moving src files to bak dir
+	devilmakes script say "file #$ii processed and saved as $ename, src moved to bak dir" 0		### reporting
+
+	let i++
+
+done
+
+devilmakes script say "headers shifting completed alright. we're halfway through exporting that damn doc" 1
+
+## === ==== FUSING MODDED FILES 
+
+devilmakes script say "starting fusion now" 1
+fusionOutput="_${projectName}-fused${sigStr}-${tStr}.md"					### setting filename for the resulting doc
+pandoc -o $fusionOutput --file-scope ${projectName}-headshifted*.md --to=gfm	###	processing with pandoc+GFM
+devilmakes script say "finished fusion alright pls check if all is ok. my part looks like done" 1	### reporting
+devilmakes script say "look for the file called ${fusionOutput}, that's your full documentation in one file" 1
+
+devilmakes script say "phew." 1
+devilsays "all done" 1
+devilmakes script say "I was gonna say that" 3
+chatpsa script left
+devilsays "cmon" 1
+chatpsa devil left
+chatpsa user alone
+
+chatpsa script joined
+devilmakes script say "one last thing, I'll move the modified partial articles to another folder right here" 2
+find . -name "${projectName}-headshifted*.md" -maxdepth 1 -exec mv '{}' ./"${processedPtsDir}" \;
+devilmakes script say "now it's all done really" 1
+chatpsa script left
+
+open ./
+
+chatclose
