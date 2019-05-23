@@ -11,5 +11,7 @@ Troubled Larry is basically an overly talkative pile-of-files-to-single-document
 Written and tested only locally so far (on MacOS X Mojave, GNU Bash 3.2.57). Looks alive.
 
 ### Larry requires
-- [pandoc](http://pandoc.org/)
-- [GNU sed](https://ftp.gnu.org/gnu/sed/)
+- [pandoc](http://pandoc.org/), installable through `brew install pandoc`
+
+### Additional notes on Larry
+Larry requires to be launched in the working folder, you cannot navigate it to the folder containing your .md files after you've summoned Larry.
