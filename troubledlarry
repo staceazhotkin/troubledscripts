@@ -5,12 +5,14 @@ declare WDPath
 
 getlocations () {
 	homedir="$(dirname $0)"
-	modules="${homedir}/troubledscript_modules/"
+	modules="${homedir}/modules/"
+	tpl="${homedir}/static/tpl/"
 	WDPath=$(pwd);
 
 	echo script home dir is $homedir
 	echo script modules are at $modules
-	echo is all well\?..
+	echo script templates are at $tpl
+	echo is all well?..
 
 	if [[ $homedir == "" || modules == "" ]]; 
 		then exit 99; 
@@ -164,8 +166,14 @@ devilmakes script say "headers shifting completed alright. we're halfway through
 ## === ==== FUSING MODDED FILES 
 
 devilmakes script say "starting fusion now" 1
-fusionOutput="_${projectName}-fused${sigStr}-${tStr}.md"					### setting filename for the resulting doc
-pandoc -o $fusionOutput --file-scope ${projectName}-headshifted*.md --to=gfm	###	processing with pandoc+GFM
+fusionOutput="_${projectName}-fused${sigStr}-${tStr}"					### setting filename for the resulting doc
+
+pandoc -o ${fusionOutput}.md --file-scope ${projectName}-headshifted*.md --to=gfm	###	processing with pandoc+GFM
+devilmakes script say "md version ok" 1	### reporting
+
+pandoc -o ${fusionOutput}.docx --file-scope ${projectName}-headshifted*.md --reference-doc="${tpl}ref-docx.docx"
+devilmakes script say "docx version ok" 1	### reporting
+
 devilmakes script say "finished fusion alright pls check if all is ok. my part looks like done" 1	### reporting
 devilmakes script say "look for the file called ${fusionOutput}, that's your full documentation in one file" 1
 
