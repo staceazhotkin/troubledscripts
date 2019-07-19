@@ -14,7 +14,7 @@ getlocations () {
 	echo script templates are at $tpl
 	echo is all well?..
 
-	if [[ $homedir == "" || modules == "" ]]; 
+	if [[ $homedir == "" || $modules == "" || $tpl == "" ]]; 
 		then exit 99; 
 		else return 0;
 	fi;
@@ -59,7 +59,7 @@ if [ ${WDConfirmed} == "_no_" ];
 		chatpsa user alone 1
 			chatclose 1
 
-elif [ ${WDConfirmed} == "_yes_" ]; 
+elif [ ${WDConfirmed} == _yes_ ]; 
 	then 							### proceeding if user says 'yes'
 	devilmakes script say "let's get it done" 1
 
@@ -123,13 +123,13 @@ devilmakes script say "I will also use a timestamp which is currently set to $tS
 
 ### "${WDPath}"/
 sigStr="by${scriptName}"
-srcBackupDir="srcmd-processed${sigStr}-${tStr}"
-processedPtsDir="modmd-headshifted${sigStr}-${tStr}"
-mkdir -p "${srcBackupDir}"
-mkdir -p "${processedPtsDir}" 
+dirOutput="_OUTPUT-${sigStr}-${tStr}"
+dirModded="_tmp-${sigStr}-${tStr}"
+mkdir -p "${dirOutput}"
+mkdir -p "${dirModded}" 
 
-devilmakes script say "heads up, I created a backup folder right here" 2
-devilmakes script say "I'll be moving all source md files there one by one after processing" 1
+devilmakes script say "heads up, I created a folder right here" 2
+devilmakes script say "I'll be moving the results of my tricks there one by one after processing each file. " 1
 
 # ==== PROCESSING MARKDOWN FILES
 
@@ -154,8 +154,8 @@ while [ $i -lt $len ]; do
 	ename="${projectName}-headshifted${sigStr}-${tStr}-pt${ii}.md" 	### setting filenames for export
 
 	sed '1!s/^#* ./#&/g;1!s/^# .//g' $fname > $ename 						### shifting all headings except 1st in each file
-	mv $fname $srcBackupDir													### moving src files to bak dir
-	devilmakes script say "file #$ii processed and saved as $ename, src moved to bak dir" 0		### reporting
+	mv $ename $dirModded													### moving new file to moddedfiles dir
+	devilmakes script say "file #$ii processed and saved as $ename" 0		### reporting
 
 	let i++
 
@@ -165,17 +165,36 @@ devilmakes script say "headers shifting completed alright. we're halfway through
 
 ## === ==== FUSING MODDED FILES 
 
+## setting filename for the resulting doc
 devilmakes script say "starting fusion now" 1
-fusionOutput="_${projectName}-fused${sigStr}-${tStr}"					### setting filename for the resulting doc
+fusionOutput="_${projectName}-fused${sigStr}-${tStr}"
 
-pandoc -o ${fusionOutput}.md --file-scope ${projectName}-headshifted*.md --to=gfm	###	processing with pandoc+GFM
+##	processing (pandoc) md files (headshifted collection of separate articles)
+### to markdown (no format change)
+### + applying a delinking filter (lua)
+pandoc ${dirModded}/${projectName}-headshifted*.md \
+--read=gfm --file-scope \
+--output="${fusionOutput}.md" \
+--write=gfm \
+--lua-filter="${modules}unlinker.lua"
+
+mv ${fusionOutput}.md $dirOutput
 devilmakes script say "md version ok" 1	### reporting
 
-pandoc -o ${fusionOutput}.docx --file-scope ${projectName}-headshifted*.md --reference-doc="${tpl}ref-docx.docx"
+##	processing (pandoc) md files (headshifted collection of separate articles)
+### to docx (conversion) uses style reference file)
+### + applying a delinking filter (lua)
+pandoc ${dirModded}/${projectName}-headshifted*.md \
+--read=gfm --file-scope \
+--output="${fusionOutput}.docx" \
+--write=docx --reference-doc="${tpl}ref-docx.docx" \
+--lua-filter="${modules}unlinker.lua"
+
+mv ${fusionOutput}.docx $dirOutput
 devilmakes script say "docx version ok" 1	### reporting
 
 devilmakes script say "finished fusion alright pls check if all is ok. my part looks like done" 1	### reporting
-devilmakes script say "look for the file called ${fusionOutput}, that's your full documentation in one file" 1
+devilmakes script say "look for the file called ${fusionOutput}, that's your full documentation, in two versions (md + docx)" 1
 
 devilmakes script say "phew." 1
 devilsays "all done" 1
@@ -187,10 +206,14 @@ chatpsa user alone
 
 chatpsa script joined
 devilmakes script say "one last thing, I'll move the modified partial articles to another folder right here" 2
-find . -name "${projectName}-headshifted*.md" -maxdepth 1 -exec mv '{}' ./"${processedPtsDir}" \;
-devilmakes script say "now it's all done really" 1
+
+## find . -name "${projectName}-headshifted*.md" -maxdepth 1 -exec mv '{}' ./"${processedPtsDir}" \;
+## find . -name "*.png" -maxdepth 1 -exec mv '{}' ./"${srcBackupDir}" \;
+
+devilmakes script say "done. now it's all done really" 1
 chatpsa script left
 
 open ./
+osascript ${modules}winhider.applescript
 
 chatclose
