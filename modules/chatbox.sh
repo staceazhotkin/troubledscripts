@@ -105,12 +105,12 @@ devilmakes () {
 			;;
 		confess)
 			read userInputRaw
-			userInputLC="$(echo $userInputRaw | tr '[A-Z]' '[a-z]')"
-			userInputFixed="_${userInputLC//[^a-z-_]/}_"
+			userInputLowercased="$(echo $userInputRaw | tr '[A-Z]' '[a-z]')"
+			userInputNormalized="${userInputLowercased//[^a-z0-9_-]/}"
 			if [[ $3 != "" ]]; 
 				then 
 					v2rw_name="$3"
-					eval eval "\${v2rw_name}=\$userInputFixed"
+					eval eval "\${v2rw_name}=\$userInputNormalized"
 				else 
 					devilsays "$scriptName wasn't taking notes if you're interested"
 			fi

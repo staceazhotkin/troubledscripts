@@ -46,34 +46,41 @@ devilmakes script say "ok gotcha. $WDConfirmed it is" 1
 
 ## === ==== PROCESSING USER INPUT
 
-if [ ${WDConfirmed} == "_no_" ]; 
-	then 							### exiting script if user says 'no'
-	devilmakes script say "but if so then um" 2
-	devilmakes script say "any thoughts on where's the right folder?" 1
-	devilmakes script say "wait stop. no clue what to do next anyway." 2
-	devilmakes script say "I quit. launch me at the right place next time" 1
-		chatpsa script left 1
-	devilsays "um bye $scriptName" 2
-	devilsays "to be frank I wouldn't quite call this conversation really productive lol" 3
-		chatpsa devil left 1
-		chatpsa user alone 1
-			chatclose 1
-
-elif [ ${WDConfirmed} == _yes_ ]; 
-	then 							### proceeding if user says 'yes'
-	devilmakes script say "let's get it done" 1
-
-else 								### exiting script if user says something other than 'yes' or 'no'
-	devilmakes script say "wait what" 4
-	devilmakes script say "the fuck's that supposed to mean?" 1
-	devilmakes script say "that's bullshit. this whole thing is bullshit. fuck you. I quit" 1
-	devilmakes script say "you go meditate on your fucking behavior" 1
-		chatpsa script left 2
-	devilsays "I personally lol'd" 2
-		chatpsa devil left 2
-		chatpsa user alone 1
-			chatclose 2
-fi
+case ${WDConfirmed} in 
+		y|yes|yup|yep|yea|yeah|yah|aye|affirmative) 				### proceeding if user says 'yes'
+			devilmakes script say "let's get it done brother" 1
+			devilmakes script say "#yolo" 1
+			;;
+		n|no|nah|nope|nay|negative) 								### exiting script if user says 'no'
+			devilmakes script say "but if so then um" 2
+			devilmakes script say "any thoughts on where's the right folder?" 1
+			devilmakes script say "wait stop. no clue what to do next anyway." 2
+			devilmakes script say "I quit. launch me at the right place next time" 1
+				chatpsa script left 1
+			devilsays "um bye $scriptName" 2
+			devilsays "to be frank I wouldn't quite call this conversation really productive lol" 3
+				chatpsa devil left 1
+				chatpsa user alone 1
+				chatclose 1
+			;;
+		da)
+			devilmakes script say "you russian or what?" 2
+			devilmakes script say "vodka vodka boris yeltsin" 1
+			devilmakes script say "hth" 1
+			devilmakes script say "anyway" 2
+			devilmakes script say "let's go comrade" 1
+			;;
+		*)															### exiting script if user says gibberish
+			devilmakes script say "wait what" 4
+			devilmakes script say "the fuck's that supposed to mean?" 1
+			devilmakes script say "that's bullshit. this whole thing is bullshit. fuck you. I quit" 1
+			devilmakes script say "you go meditate on your fucking behavior" 1
+				chatpsa script left 2
+			devilsays "I personally lol'd" 2
+				chatpsa devil left 2
+				chatpsa user alone 1
+				chatclose 2
+esac
 
 ## === ==== SCANNING AND DOUBLE-CHECKING THE CONFIRMED DIR
 
@@ -102,10 +109,11 @@ devilmakes script say "ok, fetched $len md files to process" 2
 devilmakes script say "what's your project called?" 1
 devilmakes user confess projectNameRaw 0		### reading user reply to use as filename later
 # read projectNameRaw					
-projectName=${projectNameRaw//[^a-zA-Z0-9-]/}	### normalizing input
-if [ "_${projectName}_" != "${projectNameRaw}" ]; then 		### mention if the resulting string differs from the original
+projectName=${projectNameRaw//[^a-z0-9-]/}	### normalizing input
+if [ "${projectName}" != "${projectNameRaw}" ]; then 		### mention if the resulting string differs from the original
 	devilmakes script say "I think I apologize but I actually had to clean your shit up and that was totally non-inspiring so fuck you." 2
-	devilmakes script say "here's the name I'll use as a title for your project from now on" 1
+	devilmakes script say "here's the name I'll use as a title for your project from now on:" 1
+	devilmakes script say $projectName 1
 	devilmakes script say "and I congratulate you on the fact that you can't actually do shit about it. " 1
 	devilmakes script say "except embrace it of course" 3
 	devilsays "heheh sorry" 1
@@ -194,24 +202,21 @@ mv ${fusionOutput}.docx $dirOutput
 devilmakes script say "docx version ok" 1	### reporting
 
 devilmakes script say "finished fusion alright pls check if all is ok. my part looks like done" 1	### reporting
-devilmakes script say "look for the file called ${fusionOutput}, that's your full documentation, in two versions (md + docx)" 1
+devilmakes script say "look for the folder ${dirOutput}, that's where I put your documentation, in two versions (md + docx)" 1
 
 devilmakes script say "phew." 1
 devilsays "all done" 1
-devilmakes script say "I was gonna say that" 3
+devilmakes script say "I was gonna say that" 2
 chatpsa script left
-devilsays "cmon" 1
+devilsays "cmon" 2
 chatpsa devil left
-chatpsa user alone
 
 chatpsa script joined
-devilmakes script say "one last thing, I'll move the modified partial articles to another folder right here" 2
-
-## find . -name "${projectName}-headshifted*.md" -maxdepth 1 -exec mv '{}' ./"${processedPtsDir}" \;
-## find . -name "*.png" -maxdepth 1 -exec mv '{}' ./"${srcBackupDir}" \;
-
-devilmakes script say "done. now it's all done really" 1
-chatpsa script left
+devilmakes script say "one last thing" 2
+chatpsa devil kicked script
+devilsays "hehe sorry" 1
+chatpsa devil left
+chatpsa user alone
 
 open ./
 osascript ${modules}winhider.applescript
