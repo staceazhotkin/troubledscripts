@@ -46,7 +46,7 @@ devilmakes script say "ok gotcha. $WDConfirmed it is" 1
 
 ## === ==== PROCESSING USER INPUT
 
-case ${WDConfirmed} in 
+case $WDConfirmed in 
 		y|yes|yup|yep|yea|yeah|yah|aye|affirmative) 				### proceeding if user says 'yes'
 			devilmakes script say "let's get it done brother" 1
 			devilmakes script say "#yolo" 1
@@ -86,11 +86,9 @@ esac
 
 IFS='
 '
-
-#files=(`ls *.md > /dev/null 2>&1`) 	### fetching names of markdown files to process
-files=(`ls *.md`) 	### fetching names of markdown files to process
-len=${#files[*]}  					### getting the number of those files
-if [ $len -eq 0 ]; then				### exiting if there are none
+files=(`ls ./*.md`) 			### fetching names of markdown files to process
+len=${#files[*]}  			### getting the number of those files
+if [ $len -eq 0 ]; then 	### exiting if there are none
 	devilmakes script say "...you serious? you seen any md files in this fucking folder? go waste somebody else's time" 2
 		chatpsa script left 1
 		chatpsa devil joined 1
@@ -103,13 +101,14 @@ fi
 devilmakes script say "ok, fetched $len md files to process" 2
 
 # ==== PREPARING ENVIRONMENT
-
 ## === ==== NAMING PROJECT
 
 devilmakes script say "what's your project called?" 1
 devilmakes user confess projectNameRaw 0		### reading user reply to use as filename later
+
 # read projectNameRaw					
-projectName=${projectNameRaw//[^a-z0-9-]/}	### normalizing input
+#projectName=${projectNameRaw//[^a-z0-9-]/}					### normalizing input
+projectName="$(echo $projectNameRaw | tr -c [a-z0-9-] '_')"
 if [ "${projectName}" != "${projectNameRaw}" ]; then 		### mention if the resulting string differs from the original
 	devilmakes script say "I think I apologize but I actually had to clean your shit up and that was totally non-inspiring so fuck you." 2
 	devilmakes script say "here's the name I'll use as a title for your project from now on:" 1

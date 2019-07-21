@@ -104,13 +104,15 @@ devilmakes () {
 			printf "%s%b\n" "$3" $(style 0)
 			;;
 		confess)
-			read userInputRaw
-			userInputLowercased="$(echo $userInputRaw | tr '[A-Z]' '[a-z]')"
-			userInputNormalized="${userInputLowercased//[^a-z0-9_-]/}"
+			read "userInputRaw"
+			#userInputLowercased="$(echo $userInputRaw | tr '[A-Z]' '[a-z]')"
+			#userInputNormalized="${userInputLowercased//[^a-z0-9_-]/}"
+			userInputNormalized="$(echo $userInputRaw | tr -cd [a-zA-Z0-9_-])"
+			userDecision="$(echo $userInputNormalized | tr [A-Z] [a-z])"
 			if [[ $3 != "" ]]; 
 				then 
 					v2rw_name="$3"
-					eval eval "\${v2rw_name}=\$userInputNormalized"
+					eval eval "\${v2rw_name}=\$userDecision"
 				else 
 					devilsays "$scriptName wasn't taking notes if you're interested"
 			fi
