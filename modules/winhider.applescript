@@ -1,5 +1,11 @@
 #!/usr/bin/env osascript
 
-tell application "iTerm" to set visible of front window to false
-tell application "Terminal" to set visible of front window to false
---say "Here you fucking go Constantine"
+if application "iTerm" is running then
+	tell application "iTerm"
+		tell current window to set visible to false
+	end tell
+end if
+
+if application "Terminal" is running then
+	tell application "Terminal" to set visible of every window to false
+end if
