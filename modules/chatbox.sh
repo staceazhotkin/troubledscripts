@@ -110,7 +110,7 @@ devilmakes () {
 			read "userInputRaw"
 			#userInputLowercased="$(echo $userInputRaw | tr '[A-Z]' '[a-z]')"
 			#userInputNormalized="${userInputLowercased//[^a-z0-9_-]/}"
-			userInputNormalized="$(echo $userInputRaw | tr -cd [a-zA-Z0-9_-])"
+			userInputNormalized="$(echo $userInputRaw | tr -c '[a-zA-Z0-9_-\r\n]' '_')"
 			userDecision="$(echo $userInputNormalized | tr [A-Z] [a-z])"
 			if [[ $3 != "" ]]; 
 				then 

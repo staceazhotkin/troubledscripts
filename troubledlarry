@@ -119,7 +119,7 @@ devilmakes user confess projectNameRaw 0		### reading user reply to use as filen
 
 # read projectNameRaw					
 #projectName=${projectNameRaw//[^a-z0-9-]/}					### normalizing input
-projectName="$(echo $projectNameRaw | tr -c [a-z0-9-] '_')"
+projectName="$(echo $projectNameRaw | tr -c '[a-z0-9_\r\n]' '_')"
 if [ "${projectName}" != "${projectNameRaw}" ]; then 		### mention if the resulting string differs from the original
 	devilmakes script say "I think I apologize but I actually had to clean your shit up and that was totally non-inspiring so fuck you." 2
 	devilmakes script say "here's the name I'll use as a title for your project from now on:" 1
@@ -228,7 +228,8 @@ devilsays "hehe sorry" 1
 chatpsa devil left
 chatpsa user alone
 
-open ./
+sleep 2s
 osascript ${modules}winhider.applescript
+open ./
 
 chatclose
