@@ -1,11 +1,11 @@
 #!/bin/bash
 
 escSeq="\x1B[";
-delayQuantum=.2;
+delayQuantum=.35;
 
 # ==== GENERAL STYLING ALIASES
 
-## === ==== text color
+## === text color
 
 fgDefault="39";
 fgYellow="33";
@@ -13,12 +13,12 @@ fgCyan="36";
 fgRed="91";
 fgMagenta="35"
 
-## === ==== text bg
+## === text bg
 
 bgDefault="49"
 bgRed="41"
 
-## === ==== text weight
+## === text weight
 
 weightRegular="21"
 weightBold="1"
@@ -40,18 +40,19 @@ devilName="the devil"
 devilColor="$fgRed"
 devilNameStyled="$(style $devilColor $weightBold)$devilName$(style 0)"
 
-userName="I FORGOT MY NAME"					# verbose default
-userColor="$fgRed";							# verbose default
+# defaults for verbosing
+userName="I FORGOT MY NAME"
+userColor="$fgRed";
 userNameStyled="$(style $userColor $weightBold)$userName$(style 0)"
 
-scriptName="I NEVER HAD A FUCKING NAME";	# verbose default
-scriptColor="$fgMagenta";					# verbose default
+scriptName="I NEVER HAD A FUCKING NAME";
+scriptColor="$fgMagenta";
 scriptNameStyled="$(style $scriptColor $weightBold)$scriptName$(style 0)"
 
 # ==== FUNCTIONS
 
 devilnames () {
-	case $1 in 								# I HOPE YOU REALIZE THAT THIS PART ONLY MAKES IT WORSE
+	case $1 in 	# I HOPE YOU REALIZE THAT THIS PART ONLY MAKES IT WORSE
 		script)
 			scriptName="$2"
 			userColor="$fgCyan";
@@ -70,19 +71,21 @@ devilnames () {
 }
 
 devilsays () {
-	local mp=0
-	mp=$2*$delayQuantum
+	#echo $2
+	local mp=$(echo "scale=2; $2 * $delayQuantum;" | bc)
+	#echo $mp
 	sleep $mp
 	printf "%b%s:%b " $(style "$devilColor" "$weightBold") "$devilName" $(style 0);
 	printf "%s%b\n" "$1" $(style 0); 
 }
 
 devilmakes () { 
-	local mp=0
-	mp=$4*$delayQuantum
+	#echo $4
+	local mp=$(echo "scale=2; $4 * $delayQuantum;" | bc)
+	#echo $mp
 	sleep $mp
 	
-	case $1 in 								# I won't even say anything about this part. 
+	case $1 in 	# I won't even say anything about this part. 
 		script)
 			partyColor="$scriptColor"
 			partyName="$scriptName"
@@ -96,11 +99,11 @@ devilmakes () {
             return 92
 	esac
 
-							# announcing speaker
+	# announcing speaker
 	printf "%b%s:%b " $(style "$partyColor" "$weightBold") "$partyName" $(style 0);
 
 	case $2 in 
-		say) 				# outputting speaker's line
+		say) 	# outputting speaker's line
 			printf "%s%b\n" "$3" $(style 0)
 			;;
 		confess)
@@ -111,8 +114,8 @@ devilmakes () {
 			userDecision="$(echo $userInputNormalized | tr [A-Z] [a-z])"
 			if [[ $3 != "" ]]; 
 				then 
-					v2rw_name="$3"
-					eval eval "\${v2rw_name}=\$userDecision"
+					varname="$3"
+					eval eval "\${varname}=\$userDecision"
 				else 
 					devilsays "$scriptName wasn't taking notes if you're interested"
 			fi
@@ -128,7 +131,7 @@ chatpsa () {
 	mp=$3*$delayQuantum
 	sleep $mp
 
-	case $1 in 								# WHEN I SEE THIS PART I FUCKING CRY BLOOD. PLEASE REWRITE IT
+	case $1 in 	# WHEN I SEE THIS PART I FUCKING CRY BLOOD. PLEASE REWRITE IT
 		script)
 			partyColor="$scriptColor"
 			partyName="$scriptName"
@@ -155,9 +158,14 @@ chatpsa () {
 			action="has joined the chat"			
 			;;
 		summoned)
+			#varname="$3"
+			#eval eval "\${varname}=\$partyCalled"
 			action="has summoned $3"
 			;;
 		kicked)
+			#varname="${3}NameStyled"
+			#eval eval "\${varname}=\${whom}"
+			#action="has kicked $whom from here"
 			action="has kicked $3 from here"
 			;;
 		alone)

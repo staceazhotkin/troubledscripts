@@ -70,6 +70,17 @@ case $WDConfirmed in
 			devilmakes script say "anyway" 2
 			devilmakes script say "let's go comrade" 1
 			;;
+		net)
+			devilmakes script say "you russian or what?" 2
+			devilmakes script say "vodka vodka boris yeltsin" 1
+			devilmakes script say "hth" 1
+			devilmakes script say "anyway" 2
+			devilmakes script say "sasi lalka" 1
+				chatpsa script left 1
+				chatpsa devil left 1
+				chatpsa user alone 1
+				chatclose 1
+			;;
 		*)															### exiting script if user says gibberish
 			devilmakes script say "wait what" 4
 			devilmakes script say "the fuck's that supposed to mean?" 1
