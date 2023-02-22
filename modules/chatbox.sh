@@ -1,7 +1,7 @@
-#!/bin/bash
+ #!/bin/bash
 
 escSeq="\x1B[";
-delayQuantum=.35;
+delayQuantum=0.3;
 
 # ==== GENERAL STYLING ALIASES
 
@@ -74,7 +74,7 @@ devilsays () {
 	#echo $2
 	local mp=$(echo "scale=2; $2 * $delayQuantum;" | bc)
 	#echo $mp
-	sleep $mp
+	sleep $mp > /dev/null
 	printf "%b%s:%b " $(style "$devilColor" "$weightBold") "$devilName" $(style 0);
 	printf "%s%b\n" "$1" $(style 0); 
 }
@@ -83,7 +83,7 @@ devilmakes () {
 	#echo $4
 	local mp=$(echo "scale=2; $4 * $delayQuantum;" | bc)
 	#echo $mp
-	sleep $mp
+	sleep ${mp} 2> /dev/null
 	
 	case $1 in 	# I won't even say anything about this part. 
 		script)
@@ -129,7 +129,7 @@ chatpsa () {
 	action="did nothing lol. this msg is for the sake of verbose mode"
 	local mp=0
 	mp=$3*$delayQuantum
-	sleep $mp
+	sleep ${mp} 2> /dev/null
 
 	case $1 in 	# WHEN I SEE THIS PART I FUCKING CRY BLOOD. PLEASE REWRITE IT
 		script)
